@@ -1,9 +1,10 @@
 class Loaf():
-    def __init__(self, weight=int|float, hydration=int|float, salt=int|float, starter=int|float):
+    def __init__(self, quantity=int, weight=int|float, hydration=int|float, salt=int|float, starter=int|float):
         self.weight = weight
         self.hydration = hydration
         self.salt = salt
         self.starter = starter
+        self.quantity = quantity
 
     def return_unit_value(self):
         """
@@ -39,7 +40,7 @@ class Loaf():
         flour_in_starter = self.return_amount_of_water_and_flour_in_starter()
         unit_value = self.return_unit_value()
         flour_in_recipe = (unit_value * 100) - flour_in_starter
-        return round(flour_in_recipe, 2)
+        return round((self.quantity * flour_in_recipe), 2)
     
     def return_water_in_recipe(self):
         """
@@ -47,8 +48,8 @@ class Loaf():
         """
         water_in_starter = self.return_amount_of_water_and_flour_in_starter()
         unit_value = self.return_unit_value()
-        water_in_recipe = (unit_value * 100) - water_in_starter
-        return round(water_in_recipe, 2)
+        water_in_recipe = (unit_value * self.hydration) - water_in_starter
+        return round((self.quantity * water_in_recipe), 2)
     
     def return_salt_in_recipe(self):
         """
@@ -57,7 +58,7 @@ class Loaf():
         """
         unit_value = self.return_unit_value()
         salt_in_recipe = unit_value * self.salt
-        return round(salt_in_recipe, 2)
+        return round((self.quantity * salt_in_recipe), 2)
     
     def return_starter_in_recipe(self):
         """
@@ -65,13 +66,18 @@ class Loaf():
         """
         half_amount_of_starter = self.return_amount_of_water_and_flour_in_starter()
         amount_of_starter_in_recipe = half_amount_of_starter * 2
-        return round(amount_of_starter_in_recipe, 2)
+        return round((self.quantity * amount_of_starter_in_recipe), 2)
 
 
 if __name__ == "__main__":
-    bread = Loaf(weight=875, hydration=72, salt=2.2, starter=17)
+    bread = Loaf(quantity=3, weight=875, hydration=72, salt=2.2, starter=17)
     flour = bread.return_flour_in_recipe()
     water = bread.return_water_in_recipe()
     salt = bread.return_salt_in_recipe()
     starter = bread.return_starter_in_recipe()
     print(f"Flour: {flour}g\nWater: {water}g\nSalt: {salt}g\nStarter: {starter}g")
+
+
+# TODO: take bread parameters as CLI args
+# TODO: tests
+# TODO: list specific flour amounts e.g. rye, wheat, etc
