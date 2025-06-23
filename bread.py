@@ -95,6 +95,4 @@ if __name__ == "__main__":
     starter = bread.return_starter_in_recipe()
     print(f"Number of dough balls: {quantity}\n\nRecipe:\nFlour: {flour}g\nWater: {water}g\nSalt: {salt}g\nStarter: {starter}g")
 
-
-# TODO: tests
 # TODO: list specific flour amounts e.g. rye, wheat, etc
