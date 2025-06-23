@@ -1,6 +1,7 @@
 import argparse
+
 class Loaf():
-    def __init__(self, quantity=int, weight=int|float, hydration=int|float, salt=int|float, starter=int|float):
+    def __init__(self, quantity, weight, hydration, salt, starter):
         self.quantity = quantity
         self.weight = weight
         self.hydration = hydration
