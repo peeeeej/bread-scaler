@@ -1,10 +1,10 @@
 class Loaf():
     def __init__(self, quantity=int, weight=int|float, hydration=int|float, salt=int|float, starter=int|float):
+        self.quantity = quantity
         self.weight = weight
         self.hydration = hydration
         self.salt = salt
         self.starter = starter
-        self.quantity = quantity
 
     def return_unit_value(self):
         """
