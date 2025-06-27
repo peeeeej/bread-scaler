@@ -71,15 +71,19 @@ class Loaf():
         return round((self.quantity * amount_of_starter_in_recipe), 2)
 
 
-argParser = argparse.ArgumentParser()
-argParser.add_argument("-q", "--quantity", type=int, dest="quantity", required=False, help="number of doughballs or loaves")
-argParser.add_argument("-d", "--dough-weight", type=float, dest="weight", required=True, help="weight per dough ball or loaf")
-argParser.add_argument("-w", "--water", type=float, dest="hydration", required=True, help="percent hydration")
-argParser.add_argument("-s", "--salt", type=float, dest="salt", required=True, help="percent salt")
-argParser.add_argument("-y", "--starter", type=float, dest="starter", required=True, help="percent starter as a portion of fermented flour")
+def round_to_nearest_half(number):
+    return round(number * 2) / 2
+
+arg_parser = argparse.ArgumentParser()
+arg_parser.add_argument("-q", "--quantity", type=int, dest="quantity", required=False, help="number of doughballs or loaves")
+arg_parser.add_argument("-d", "--dough-weight", type=float, dest="weight", required=True, help="weight per dough ball or loaf in grams")
+arg_parser.add_argument("-w", "--water", type=float, dest="hydration", required=True, help="percent hydration")
+arg_parser.add_argument("-s", "--salt", type=float, dest="salt", required=True, help="percent salt")
+arg_parser.add_argument("-y", "--starter", type=float, dest="starter", required=True, help="percent starter as a portion of fermented flour")
+arg_parser.add_argument("-j", "--joy", action="store_true", dest="joy", required=False, help="round to nearest half gram")
 
 if __name__ == "__main__":
-    parsed_args = argParser.parse_args()
+    parsed_args = arg_parser.parse_args()
     if not parsed_args.quantity:
         quantity = 1
     else:
@@ -89,11 +93,19 @@ if __name__ == "__main__":
     salt = parsed_args.salt
     starter = parsed_args.starter
 
-    bread = Loaf(quantity=quantity, weight=weight, hydration=hydration, salt=salt, starter=starter)
-    flour = bread.return_flour_in_recipe()
-    water = bread.return_water_in_recipe()
-    salt = bread.return_salt_in_recipe()
-    starter = bread.return_starter_in_recipe()
-    print(f"Number of dough balls: {quantity}\n\nRecipe:\nFlour: {flour}g\nWater: {water}g\nSalt: {salt}g\nStarter: {starter}g")
+    dough = Loaf(quantity=quantity, weight=weight, hydration=hydration, salt=salt, starter=starter)
+    flour = dough.return_flour_in_recipe()
+    water = dough.return_water_in_recipe()
+    salt = dough.return_salt_in_recipe()
+    starter = dough.return_starter_in_recipe()
+
+    if not parsed_args.joy:
+        print(f"Number of dough balls: {quantity}\n\nRecipe:\nFlour: {flour}g\nWater: {water}g\nSalt: {salt}g\nStarter: {starter}g")
+    else:
+        flour = round_to_nearest_half(flour)
+        water = round_to_nearest_half(water)
+        salt = round_to_nearest_half(salt)
+        starter = round_to_nearest_half(starter)
+        print(f"Number of dough balls: {quantity}\n\nRecipe:\nFlour: {flour}g\nWater: {water}g\nSalt: {salt}g\nStarter: {starter}g")
 
 # TODO: list specific flour amounts e.g. rye, wheat, etc
