@@ -40,3 +40,6 @@ And install the requirements:
 
 Then you can run `pytest` to run tests. For those new to venv, run `deactivate` to stop your virtual 
 environment.
+
+### Code Coverage:
+`pytest --cov --cov-report=html:bread_cov`

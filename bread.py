@@ -82,7 +82,7 @@ arg_parser.add_argument("-s", "--salt", type=float, dest="salt", required=True, 
 arg_parser.add_argument("-y", "--starter", type=float, dest="starter", required=True, help="percent starter as a portion of fermented flour")
 arg_parser.add_argument("-j", "--joy", action="store_true", dest="joy", required=False, help="round to nearest half gram")
 
-if __name__ == "__main__":
+def main():
     parsed_args = arg_parser.parse_args()
     if not parsed_args.quantity:
         quantity = 1
@@ -107,5 +107,8 @@ if __name__ == "__main__":
         salt = round_to_nearest_half(salt)
         starter = round_to_nearest_half(starter)
         print(f"Number of dough balls: {quantity}\n\nRecipe:\nFlour: {flour}g\nWater: {water}g\nSalt: {salt}g\nStarter: {starter}g")
+
+if __name__ == "__main__":
+    main()
 
 # TODO: list specific flour amounts e.g. rye, wheat, etc
