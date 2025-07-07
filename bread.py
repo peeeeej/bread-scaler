@@ -80,7 +80,7 @@ arg_parser.add_argument("-d", "--dough-weight", type=float, dest="weight", requi
 arg_parser.add_argument("-w", "--water", type=float, dest="hydration", required=True, help="percent hydration")
 arg_parser.add_argument("-s", "--salt", type=float, dest="salt", required=True, help="percent salt")
 arg_parser.add_argument("-y", "--starter", type=float, dest="starter", required=True, help="percent starter as a portion of fermented flour")
-arg_parser.add_argument("-j", "--joy", action="store_true", dest="joy", required=False, help="round to nearest half gram")
+arg_parser.add_argument("-r", "--round", action="store_true", dest="round", required=False, help="round to nearest half gram")
 
 def main():
     parsed_args = arg_parser.parse_args()
@@ -99,7 +99,7 @@ def main():
     salt = dough.return_salt_in_recipe()
     starter = dough.return_starter_in_recipe()
 
-    if not parsed_args.joy:
+    if not parsed_args.round:
         print(f"Number of dough balls: {quantity}\n\nRecipe:\nFlour: {flour}g\nWater: {water}g\nSalt: {salt}g\nStarter: {starter}g")
     else:
         flour = round_to_nearest_half(flour)
