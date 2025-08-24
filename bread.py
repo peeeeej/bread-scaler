@@ -1,5 +1,4 @@
 import argparse
-from typing import Optional
 
 
 class Loaf:
@@ -10,7 +9,7 @@ class Loaf:
         hydration: float,
         salt: float,
         starter: float,
-        starter_ratio: Optional[float] = None,
+        starter_ratio: float,
     ) -> None:
         self.quantity = quantity
         self.weight = weight
@@ -50,10 +49,7 @@ class Loaf:
         """
         unit_value = self.return_unit_value()
         starter_multiplier = self.return_starter_multiplier()
-        if ratio is None:
-            water_in_starter = (unit_value * 100) * starter_multiplier
-        else:
-            water_in_starter = ((unit_value * 100) * starter_multiplier) * ratio
+        water_in_starter = ((unit_value * 100) * starter_multiplier) * ratio
         return water_in_starter
 
     @property
@@ -110,6 +106,7 @@ arg_parser.add_argument(
     "--quantity",
     type=int,
     dest="quantity",
+    default=1,
     required=False,
     help="number of doughballs or loaves",
 )
@@ -152,29 +149,21 @@ arg_parser.add_argument(
     "--ratio",
     type=float,
     dest="ratio",
+    default=1,
     help="use if your starter does not contain equal parts flour and water. this should be a amount of water compared to flour, e.g. `.8` for 4 parts water to 5 parts flour.",
 )
 
 
 def main():
     parsed_args = arg_parser.parse_args()
-    if not parsed_args.quantity:
-        quantity = 1
-    else:
-        quantity = parsed_args.quantity
-    weight = parsed_args.weight
-    hydration = parsed_args.hydration
-    salt = parsed_args.salt
-    starter = parsed_args.starter
-    ratio = parsed_args.ratio
 
     dough = Loaf(
-        quantity=quantity,
-        weight=weight,
-        hydration=hydration,
-        salt=salt,
-        starter=starter,
-        starter_ratio=ratio,
+        quantity=parsed_args.quantity,
+        weight=parsed_args.weight,
+        hydration=parsed_args.hydration,
+        salt=parsed_args.salt,
+        starter=parsed_args.starter,
+        starter_ratio=parsed_args.ratio,
     )
     flour = round(dough.total_flour, 2)
     water = round(dough.total_water, 2)
@@ -183,7 +172,7 @@ def main():
 
     if not parsed_args.round:
         print(
-            f"Number of dough balls: {quantity}\n\nRecipe:\nFlour: {flour}g\nWater: {water}g\nSalt: {salt}g\nStarter: {starter}g"
+            f"Number of dough balls: {parsed_args.quantity}\n\nRecipe:\nFlour: {flour}g\nWater: {water}g\nSalt: {salt}g\nStarter: {starter}g"
         )
     else:
         flour = round_to_nearest_half(flour)
@@ -191,7 +180,7 @@ def main():
         salt = round_to_nearest_half(salt)
         starter = round_to_nearest_half(starter)
         print(
-            f"Number of dough balls: {quantity}\n\nRecipe:\nFlour: {flour}g\nWater: {water}g\nSalt: {salt}g\nStarter: {starter}g"
+            f"Number of dough balls: {parsed_args.quantity}\n\nRecipe:\nFlour: {flour}g\nWater: {water}g\nSalt: {salt}g\nStarter: {starter}g"
         )
 
 

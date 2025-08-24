@@ -3,7 +3,9 @@ import pytest
 
 from bread import Loaf
 
-dough_test = Loaf(quantity=3, weight=250, hydration=72, salt=2, starter=12)
+dough_test = Loaf(
+    quantity=3, weight=250, hydration=72, salt=2, starter=12, starter_ratio=1
+)
 
 dough_test_with_starter_ratio = Loaf(
     quantity=1, weight=900, hydration=80, salt=2, starter=12, starter_ratio=0.8
@@ -61,7 +63,9 @@ def test_round_to_nearest_half_rounds_to_whole_gram():
 
 
 def test_total_ingredients_weight_matches_target():
-    dough = Loaf(quantity=1, weight=1000, hydration=80, salt=2, starter=10)
+    dough = Loaf(
+        quantity=1, weight=1000, hydration=80, salt=2, starter=10, starter_ratio=1
+    )
     total_weight = round(
         (
             dough.total_flour
