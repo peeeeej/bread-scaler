@@ -18,7 +18,7 @@ class Loaf:
         self.starter = starter
         self.starter_ratio = starter_ratio
 
-    def return_unit_value(self) -> float:
+    def _return_unit_value(self) -> float:
         """
         Needed to determine downstream ingredient amounts based on weight of the loaf,
         hydration and the amount of salt
@@ -26,7 +26,7 @@ class Loaf:
         unit_value = self.weight / (100 + (self.hydration + self.salt))
         return unit_value
 
-    def return_starter_multiplier(self) -> float:
+    def _return_starter_multiplier(self) -> float:
         """
         Needed to determine how much of the flour and water in the recipe is coming
         from the starter.
@@ -34,21 +34,21 @@ class Loaf:
         starter_multipler = self.starter * 0.01
         return starter_multipler
 
-    def return_amount_of_flour_in_starter(self) -> float:
+    def _return_amount_of_flour_in_starter(self) -> float:
         """
         Returns the amount of flour in the starter.
         """
-        unit_value = self.return_unit_value()
-        starter_multiplier = self.return_starter_multiplier()
+        unit_value = self._return_unit_value()
+        starter_multiplier = self._return_starter_multiplier()
         flour_in_starter = (unit_value * 100) * starter_multiplier
         return flour_in_starter
 
-    def return_amount_of_water_in_starter(self, ratio) -> float:
+    def _return_amount_of_water_in_starter(self, ratio) -> float:
         """
         Returns the amount of water in the starter. If a starter ratio is not supplied on the command line, assume that the amount of water in the starter is equal to the amount of flour in the starter.
         """
-        unit_value = self.return_unit_value()
-        starter_multiplier = self.return_starter_multiplier()
+        unit_value = self._return_unit_value()
+        starter_multiplier = self._return_starter_multiplier()
         water_in_starter = ((unit_value * 100) * starter_multiplier) * ratio
         return water_in_starter
 
@@ -57,8 +57,8 @@ class Loaf:
         """
         Returns the amount of flour in the recipe minus the amount of flour in the starter.
         """
-        flour_in_starter = self.return_amount_of_flour_in_starter()
-        unit_value = self.return_unit_value()
+        flour_in_starter = self._return_amount_of_flour_in_starter()
+        unit_value = self._return_unit_value()
         flour_in_recipe = (unit_value * 100) - flour_in_starter
         return self.quantity * flour_in_recipe
 
@@ -67,10 +67,10 @@ class Loaf:
         """
         Returns the amount of water in the recipe minues the amount of water in the starter.
         """
-        water_in_starter = self.return_amount_of_water_in_starter(
+        water_in_starter = self._return_amount_of_water_in_starter(
             ratio=self.starter_ratio
         )
-        unit_value = self.return_unit_value()
+        unit_value = self._return_unit_value()
         water_in_recipe = (unit_value * self.hydration) - water_in_starter
         return self.quantity * water_in_recipe
 
@@ -80,7 +80,7 @@ class Loaf:
         Returns the amount of salt in the recipe based on the unit value calculation and
         the percent of salt in the loaf.
         """
-        unit_value = self.return_unit_value()
+        unit_value = self._return_unit_value()
         salt_in_recipe = unit_value * self.salt
         return self.quantity * salt_in_recipe
 
@@ -90,8 +90,8 @@ class Loaf:
         Returns the sum of the amount of flour in starter and the amount of water in starter.
         """
         amount_of_starter_in_recipe = (
-            self.return_amount_of_flour_in_starter()
-            + self.return_amount_of_water_in_starter(ratio=self.starter_ratio)
+            self._return_amount_of_flour_in_starter()
+            + self._return_amount_of_water_in_starter(ratio=self.starter_ratio)
         )
         return self.quantity * amount_of_starter_in_recipe
 

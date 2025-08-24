@@ -13,17 +13,17 @@ dough_test_with_starter_ratio = Loaf(
 
 
 def test_return_unit_value_returns_correct_unit_value():
-    unit_value = dough_test.return_unit_value()
+    unit_value = dough_test._return_unit_value()
     assert unit_value == 1.4367816091954022
 
 
 def test_return_starter_multiplier_returns_correct_starter_multiplier():
-    starter_multiplier = dough_test.return_starter_multiplier()
+    starter_multiplier = dough_test._return_starter_multiplier()
     assert starter_multiplier == 0.12
 
 
 def test_return_amount_of_flour_in_starter_returns_correct_amount():
-    amount_in_starter = dough_test.return_amount_of_flour_in_starter()
+    amount_in_starter = dough_test._return_amount_of_flour_in_starter()
     assert amount_in_starter == 17.241379310344826
 
 
