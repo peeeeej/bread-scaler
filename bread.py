@@ -16,7 +16,7 @@ class Loaf:
         hydration and the amount of salt
         """
         unit_value = self.weight / (100 + (self.hydration + self.salt))
-        return round(unit_value, 2)
+        return unit_value
 
     def return_starter_multiplier(self) -> float:
         """
@@ -47,16 +47,18 @@ class Loaf:
             water_in_starter = ((unit_value * 100) * starter_multiplier) * ratio
         return water_in_starter
 
-    def return_flour_in_recipe(self) -> float:
+    @property
+    def total_flour(self) -> float:
         """
         Returns the amount of flour in the recipe minus the amount of flour in the starter.
         """
         flour_in_starter = self.return_amount_of_flour_in_starter()
         unit_value = self.return_unit_value()
         flour_in_recipe = (unit_value * 100) - flour_in_starter
-        return round((self.quantity * flour_in_recipe), 2)
+        return self.quantity * flour_in_recipe
 
-    def return_water_in_recipe(self) -> float:
+    @property
+    def total_water(self) -> float:
         """
         Returns the amount of water in the recipe minues the amount of water in the starter.
         """
@@ -65,18 +67,20 @@ class Loaf:
         )
         unit_value = self.return_unit_value()
         water_in_recipe = (unit_value * self.hydration) - water_in_starter
-        return round((self.quantity * water_in_recipe), 2)
+        return self.quantity * water_in_recipe
 
-    def return_salt_in_recipe(self) -> float:
+    @property
+    def total_salt(self) -> float:
         """
         Returns the amount of salt in the recipe based on the unit value calculation and
         the percent of salt in the loaf.
         """
         unit_value = self.return_unit_value()
         salt_in_recipe = unit_value * self.salt
-        return round((self.quantity * salt_in_recipe), 2)
+        return self.quantity * salt_in_recipe
 
-    def return_starter_in_recipe(self) -> float:
+    @property
+    def total_starter(self) -> float:
         """
         Returns the sum of the amount of flour in starter and the amount of water in starter.
         """
@@ -84,7 +88,7 @@ class Loaf:
             self.return_amount_of_flour_in_starter()
             + self.return_amount_of_water_in_starter(ratio=self.starter_ratio)
         )
-        return round((self.quantity * amount_of_starter_in_recipe), 2)
+        return self.quantity * amount_of_starter_in_recipe
 
 
 def round_to_nearest_half(number):
@@ -163,10 +167,10 @@ def main():
         starter=starter,
         starter_ratio=ratio,
     )
-    flour = dough.return_flour_in_recipe()
-    water = dough.return_water_in_recipe()
-    salt = dough.return_salt_in_recipe()
-    starter = dough.return_starter_in_recipe()
+    flour = round(dough.total_flour, 2)
+    water = round(dough.total_water, 2)
+    salt = round(dough.total_salt, 2)
+    starter = round(dough.total_starter, 2)
 
     if not parsed_args.round:
         print(
