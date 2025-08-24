@@ -45,7 +45,9 @@ class Loaf:
 
     def _return_amount_of_water_in_starter(self, ratio) -> float:
         """
-        Returns the amount of water in the starter. If a starter ratio is not supplied on the command line, assume that the amount of water in the starter is equal to the amount of flour in the starter.
+        Returns the amount of water in the starter. If a starter ratio is not supplied on the
+        command line, assume that the amount of water in the starter is equal to the amount of
+        flour in the starter.
         """
         unit_value = self._return_unit_value()
         starter_multiplier = self._return_starter_multiplier()
@@ -53,7 +55,7 @@ class Loaf:
         return water_in_starter
 
     @property
-    def total_flour(self) -> float:
+    def total_flour_in_recipe(self) -> float:
         """
         Returns the amount of flour in the recipe minus the amount of flour in the starter.
         """
@@ -63,13 +65,11 @@ class Loaf:
         return self.quantity * flour_in_recipe
 
     @property
-    def total_water(self) -> float:
+    def total_water_in_recipe(self) -> float:
         """
         Returns the amount of water in the recipe minues the amount of water in the starter.
         """
-        water_in_starter = self._return_amount_of_water_in_starter(
-            ratio=self.starter_ratio
-        )
+        water_in_starter = self._return_amount_of_water_in_starter(ratio=self.starter_ratio)
         unit_value = self._return_unit_value()
         water_in_recipe = (unit_value * self.hydration) - water_in_starter
         return self.quantity * water_in_recipe
@@ -126,9 +126,7 @@ arg_parser.add_argument(
     required=True,
     help="percent hydration",
 )
-arg_parser.add_argument(
-    "-s", "--salt", type=float, dest="salt", required=True, help="percent salt"
-)
+arg_parser.add_argument("-s", "--salt", type=float, dest="salt", required=True, help="percent salt")
 arg_parser.add_argument(
     "-y",
     "--starter",
@@ -138,7 +136,6 @@ arg_parser.add_argument(
     help="percent starter as a portion of fermented flour",
 )
 arg_parser.add_argument(
-    "-r",
     "--round",
     action="store_true",
     dest="round",
@@ -150,7 +147,9 @@ arg_parser.add_argument(
     type=float,
     dest="ratio",
     default=1,
-    help="use if your starter does not contain equal parts flour and water. this should be a amount of water compared to flour, e.g. `.8` for 4 parts water to 5 parts flour.",
+    help="use if your starter does not contain equal parts flour and water. this should "
+    "be the amount of water compared to flour, e.g. `.8` for 4 parts water to 5 parts "
+    "flour.",
 )
 
 
@@ -165,14 +164,15 @@ def main():
         starter=parsed_args.starter,
         starter_ratio=parsed_args.ratio,
     )
-    flour = round(dough.total_flour, 2)
-    water = round(dough.total_water, 2)
+    flour = round(dough.total_flour_in_recipe, 2)
+    water = round(dough.total_water_in_recipe, 2)
     salt = round(dough.total_salt, 2)
     starter = round(dough.total_starter, 2)
 
     if not parsed_args.round:
         print(
-            f"Number of dough balls: {parsed_args.quantity}\n\nRecipe:\nFlour: {flour}g\nWater: {water}g\nSalt: {salt}g\nStarter: {starter}g"
+            f"Number of dough balls: {parsed_args.quantity}\n\nRecipe:\nFlour: "
+            f"{flour}g\nWater: {water}g\nSalt: {salt}g\nStarter: {starter}g"
         )
     else:
         flour = round_to_nearest_half(flour)
@@ -180,7 +180,8 @@ def main():
         salt = round_to_nearest_half(salt)
         starter = round_to_nearest_half(starter)
         print(
-            f"Number of dough balls: {parsed_args.quantity}\n\nRecipe:\nFlour: {flour}g\nWater: {water}g\nSalt: {salt}g\nStarter: {starter}g"
+            f"Number of dough balls: {parsed_args.quantity}\n\nRecipe:\nFlour: "
+            f"{flour}g\nWater: {water}g\nSalt: {salt}g\nStarter: {starter}g"
         )
 
 
