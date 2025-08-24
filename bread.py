@@ -1,8 +1,17 @@
 import argparse
+from typing import Optional
 
 
 class Loaf:
-    def __init__(self, quantity, weight, hydration, salt, starter, starter_ratio=None):
+    def __init__(
+        self,
+        quantity: int,
+        weight: float,
+        hydration: float,
+        salt: float,
+        starter: float,
+        starter_ratio: Optional[float] = None,
+    ) -> None:
         self.quantity = quantity
         self.weight = weight
         self.hydration = hydration
