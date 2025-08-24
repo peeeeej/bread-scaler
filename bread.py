@@ -2,12 +2,13 @@ import argparse
 
 
 class Loaf:
-    def __init__(self, quantity, weight, hydration, salt, starter):
+    def __init__(self, quantity, weight, hydration, salt, starter, starter_ratio=None):
         self.quantity = quantity
         self.weight = weight
         self.hydration = hydration
         self.salt = salt
         self.starter = starter
+        self.starter_ratio = starter_ratio
 
     def return_unit_value(self) -> float:
         """
@@ -25,22 +26,32 @@ class Loaf:
         starter_multipler = self.starter * 0.01
         return starter_multipler
 
-    def return_amount_of_water_and_flour_in_starter(self) -> float:
+    def return_amount_of_flour_in_starter(self) -> float:
         """
-        Determining the amount of flour and water in starter. We're assuming a starter with
-        equal parts water and flour. Returns an amount that we'll need to double (e.g. if it
-        returns 85, that means 85g water and 85g flour.)
+        Returns the amount of flour in the starter.
         """
         unit_value = self.return_unit_value()
         starter_multiplier = self.return_starter_multiplier()
-        amount_in_starter = (unit_value * 100) * starter_multiplier
-        return amount_in_starter
+        flour_in_starter = (unit_value * 100) * starter_multiplier
+        return flour_in_starter
+
+    def return_amount_of_water_in_starter(self, ratio) -> float:
+        """
+        Returns the amount of water in the starter. If a starter ratio is not supplied on the command line, assume that the amount of water in the starter is equal to the amount of flour in the starter.
+        """
+        unit_value = self.return_unit_value()
+        starter_multiplier = self.return_starter_multiplier()
+        if ratio is None:
+            water_in_starter = (unit_value * 100) * starter_multiplier
+        else:
+            water_in_starter = ((unit_value * 100) * starter_multiplier) * ratio
+        return water_in_starter
 
     def return_flour_in_recipe(self) -> float:
         """
         Returns the amount of flour in the recipe minus the amount of flour in the starter.
         """
-        flour_in_starter = self.return_amount_of_water_and_flour_in_starter()
+        flour_in_starter = self.return_amount_of_flour_in_starter()
         unit_value = self.return_unit_value()
         flour_in_recipe = (unit_value * 100) - flour_in_starter
         return round((self.quantity * flour_in_recipe), 2)
@@ -49,7 +60,9 @@ class Loaf:
         """
         Returns the amount of water in the recipe minues the amount of water in the starter.
         """
-        water_in_starter = self.return_amount_of_water_and_flour_in_starter()
+        water_in_starter = self.return_amount_of_water_in_starter(
+            ratio=self.starter_ratio
+        )
         unit_value = self.return_unit_value()
         water_in_recipe = (unit_value * self.hydration) - water_in_starter
         return round((self.quantity * water_in_recipe), 2)
@@ -65,10 +78,12 @@ class Loaf:
 
     def return_starter_in_recipe(self) -> float:
         """
-        I'm assuming equal amounts of water and flour in the starter.
+        Returns the sum of the amount of flour in starter and the amount of water in starter.
         """
-        half_amount_of_starter = self.return_amount_of_water_and_flour_in_starter()
-        amount_of_starter_in_recipe = half_amount_of_starter * 2
+        amount_of_starter_in_recipe = (
+            self.return_amount_of_flour_in_starter()
+            + self.return_amount_of_water_in_starter(ratio=self.starter_ratio)
+        )
         return round((self.quantity * amount_of_starter_in_recipe), 2)
 
 
@@ -120,6 +135,12 @@ arg_parser.add_argument(
     required=False,
     help="round to nearest half gram",
 )
+arg_parser.add_argument(
+    "--ratio",
+    type=float,
+    dest="ratio",
+    help="use if your starter does not contain equal parts flour and water. this should be a amount of water compared to flour, e.g. `.8` for 4 parts water to 5 parts flour.",
+)
 
 
 def main():
@@ -132,6 +153,7 @@ def main():
     hydration = parsed_args.hydration
     salt = parsed_args.salt
     starter = parsed_args.starter
+    ratio = parsed_args.ratio
 
     dough = Loaf(
         quantity=quantity,
@@ -139,6 +161,7 @@ def main():
         hydration=hydration,
         salt=salt,
         starter=starter,
+        starter_ratio=ratio,
     )
     flour = dough.return_flour_in_recipe()
     water = dough.return_water_in_recipe()
@@ -161,5 +184,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-# TODO: list specific flour amounts e.g. rye, wheat, etc
