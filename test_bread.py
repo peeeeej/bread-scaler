@@ -3,10 +3,13 @@ import pytest
 
 from bread import Loaf
 
-dough_test = Loaf(quantity=3, weight=250, hydration=72, salt=2, starter=12, starter_ratio=1)
+dough_test = Loaf(quantity=3, weight=250, hydration=72, salt=2, starter=12, starter_ratio=1, oil=0)
 
 dough_test_with_starter_ratio = Loaf(
-    quantity=1, weight=900, hydration=80, salt=2, starter=12, starter_ratio=0.8
+    quantity=1, weight=900, hydration=80, salt=2, starter=12, starter_ratio=0.8, oil=0
+)
+dough_test_with_oil = Loaf(
+    quantity=1, weight=250, hydration=72, salt=2, starter=12, starter_ratio=1, oil=3
 )
 
 
@@ -60,6 +63,11 @@ def test_return_starter_in_recipe_returns_correct_amount_of_starter_with_ratio()
     assert starter_in_recipe == 106.81318681318682
 
 
+def test_total_oil_returns_correct_amount_of_oil():
+    oil_in_recipe = dough_test_with_oil.total_oil
+    assert oil_in_recipe == 4.237288135593221
+
+
 def test_round_to_nearest_half_rounds_to_half_gram():
     rounded_water = bread.round_to_nearest_half(244.74)
     assert rounded_water == 244.5
@@ -71,45 +79,42 @@ def test_round_to_nearest_half_rounds_to_whole_gram():
 
 
 def test_total_ingredients_weight_matches_target():
-    dough = Loaf(quantity=1, weight=1000, hydration=80, salt=2, starter=10, starter_ratio=1)
-    total_weight = round(
-        (
-            dough.total_flour_in_recipe
-            + dough.total_water_in_recipe
-            + dough.total_salt
-            + dough.total_starter
-        ),
-        2,
+    dough = Loaf(quantity=1, weight=1000, hydration=80, salt=2, starter=10, starter_ratio=1, oil=3)
+    total_weight = (
+        dough.total_flour_in_recipe
+        + dough.total_water_in_recipe
+        + dough.total_salt
+        + dough.total_starter
+        + dough.total_oil
     )
     assert total_weight == 1000
 
 
 def test_total_ingredients_weight_matches_target_with_ratio():
-    dough = Loaf(quantity=1, weight=1000, hydration=80, salt=2, starter=10, starter_ratio=0.8)
-    total_weight = round(
-        (
-            dough.total_flour_in_recipe
-            + dough.total_water_in_recipe
-            + dough.total_salt
-            + dough.total_starter
-        ),
-        2,
+    dough = Loaf(
+        quantity=1, weight=1000, hydration=80, salt=2, starter=10, starter_ratio=0.8, oil=2
+    )
+    total_weight = (
+        dough.total_flour_in_recipe
+        + dough.total_water_in_recipe
+        + dough.total_salt
+        + dough.total_starter
+        + dough.total_oil
     )
     assert total_weight == 1000
 
 
 def test_total_ingredients_weight_matches_target_multiple_loaves():
-    dough = Loaf(quantity=3, weight=1000, hydration=80, salt=2, starter=10, starter_ratio=1)
-    total_weight = round(
-        (
-            dough.total_flour_in_recipe
-            + dough.total_water_in_recipe
-            + dough.total_salt
-            + dough.total_starter
-        ),
-        2,
+    dough = Loaf(quantity=20, weight=1000, hydration=80, salt=2, starter=10, starter_ratio=1, oil=1)
+    total_weight = (
+        dough.total_flour_in_recipe
+        + dough.total_water_in_recipe
+        + dough.total_salt
+        + dough.total_starter
+        + dough.total_oil
     )
-    assert total_weight == 3000
+    expected_weight = dough.weight * dough.quantity
+    assert total_weight == pytest.approx(expected_weight, rel=1e-9)
 
 
 if __name__ == "__main__":
