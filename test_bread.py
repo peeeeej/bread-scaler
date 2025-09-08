@@ -2,6 +2,8 @@ import bread
 import pytest
 
 from bread import Loaf
+from io import StringIO
+from unittest.mock import patch
 
 dough_test = Loaf(quantity=3, weight=250, hydration=72, salt=2, starter=12, starter_ratio=1, oil=0)
 
@@ -69,12 +71,12 @@ def test_total_oil_returns_correct_amount_of_oil():
 
 
 def test_round_to_nearest_half_rounds_to_half_gram():
-    rounded_water = bread.round_to_nearest_half(244.74)
+    rounded_water = bread.Loaf.round_to_nearest_half(244.74)
     assert rounded_water == 244.5
 
 
 def test_round_to_nearest_half_rounds_to_whole_gram():
-    rounded_water = bread.round_to_nearest_half(244.75)
+    rounded_water = bread.Loaf.round_to_nearest_half(244.75)
     assert rounded_water == 245
 
 
@@ -115,6 +117,57 @@ def test_total_ingredients_weight_matches_target_multiple_loaves():
     )
     expected_weight = dough.weight * dough.quantity
     assert total_weight == pytest.approx(expected_weight, rel=1e-9)
+
+
+def test_print_recipe_prints_recipe():
+    """Test that print_recipe outputs the correct recipe format"""
+    dough = Loaf(quantity=1, weight=900, hydration=80, salt=2, starter=12, starter_ratio=0.8, oil=0)
+    expected_output = (
+        "Number of dough balls: 1\n\n"
+        "Recipe:\n"
+        "Flour: 435.16g\n"
+        "Water: 348.13g\n"
+        "Salt: 9.89g\n"
+        "Starter: 106.81g\n"
+    )
+
+    with patch("sys.stdout", new=StringIO()) as fake_output:
+        dough.print_recipe(round_to_half=False)
+        assert fake_output.getvalue() == expected_output
+
+
+def test_print_recipe_prints_recipe_with_oil():
+    """Test that print_recipe outputs the correct recipe format"""
+    dough = Loaf(quantity=1, weight=900, hydration=80, salt=2, starter=12, starter_ratio=0.8, oil=1)
+    expected_output = (
+        "Number of dough balls: 1\n\n"
+        "Recipe:\n"
+        "Flour: 432.79g\n"
+        "Water: 346.23g\n"
+        "Salt: 9.84g\n"
+        "Starter: 106.23g\n"
+        "Oil: 4.92g\n"
+    )
+    with patch("sys.stdout", new=StringIO()) as fake_output:
+        dough.print_recipe(round_to_half=False)
+        assert fake_output.getvalue() == expected_output
+
+
+def test_print_recipe_prints_recipe_rounded():
+    """Test that print_recipe outputs the correct recipe format"""
+    dough = Loaf(quantity=1, weight=900, hydration=80, salt=2, starter=12, starter_ratio=0.8, oil=0)
+    expected_output = (
+        "Number of dough balls: 1\n\n"
+        "Recipe:\n"
+        "Flour: 435.0g\n"
+        "Water: 348.0g\n"
+        "Salt: 10.0g\n"
+        "Starter: 107.0g\n"
+    )
+
+    with patch("sys.stdout", new=StringIO()) as fake_output:
+        dough.print_recipe(round_to_half=True)
+        assert fake_output.getvalue() == expected_output
 
 
 if __name__ == "__main__":
