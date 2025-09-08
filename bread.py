@@ -25,24 +25,20 @@ class Loaf:
         Needed to determine downstream ingredient amounts based on weight of the loaf,
         hydration and the amount of salt
         """
-        unit_value = self.weight / (100 + (self.hydration + self.salt + self.oil))
-        return unit_value
+        return self.weight / (100 + (self.hydration + self.salt + self.oil))
 
     def _return_starter_multiplier(self) -> float:
         """
         Needed to determine how much of the flour and water in the recipe is coming
         from the starter.
         """
-        starter_multipler = self.starter * 0.01
-        return starter_multipler
+        return self.starter * 0.01
 
     def _return_amount_of_flour_in_starter(self) -> float:
         """
         Returns the amount of flour in the starter.
         """
-        unit_value = self._return_unit_value()
-        starter_multiplier = self._return_starter_multiplier()
-        flour_in_starter = (unit_value * 100) * starter_multiplier
+        flour_in_starter = (self._return_unit_value() * 100) * self._return_starter_multiplier()
         return flour_in_starter
 
     def _return_amount_of_water_in_starter(self, ratio) -> float:
@@ -51,9 +47,9 @@ class Loaf:
         command line, assume that the amount of water in the starter is equal to the amount of
         flour in the starter.
         """
-        unit_value = self._return_unit_value()
-        starter_multiplier = self._return_starter_multiplier()
-        water_in_starter = ((unit_value * 100) * starter_multiplier) * ratio
+        water_in_starter = (
+            (self._return_unit_value() * 100) * self._return_starter_multiplier()
+        ) * ratio
         return water_in_starter
 
     @property
@@ -61,9 +57,9 @@ class Loaf:
         """
         Returns the amount of flour in the recipe minus the amount of flour in the starter.
         """
-        flour_in_starter = self._return_amount_of_flour_in_starter()
-        unit_value = self._return_unit_value()
-        flour_in_recipe = (unit_value * 100) - flour_in_starter
+        flour_in_recipe = (
+            self._return_unit_value() * 100
+        ) - self._return_amount_of_flour_in_starter()
         return self.quantity * flour_in_recipe
 
     @property
@@ -71,9 +67,9 @@ class Loaf:
         """
         Returns the amount of water in the recipe minues the amount of water in the starter.
         """
-        water_in_starter = self._return_amount_of_water_in_starter(ratio=self.starter_ratio)
-        unit_value = self._return_unit_value()
-        water_in_recipe = (unit_value * self.hydration) - water_in_starter
+        water_in_recipe = (
+            self._return_unit_value() * self.hydration
+        ) - self._return_amount_of_water_in_starter(ratio=self.starter_ratio)
         return self.quantity * water_in_recipe
 
     @property
@@ -82,33 +78,60 @@ class Loaf:
         Returns the amount of salt in the recipe based on the unit value calculation and
         the percent of salt in the loaf.
         """
-        unit_value = self._return_unit_value()
-        salt_in_recipe = unit_value * self.salt
-        return self.quantity * salt_in_recipe
+        return self.quantity * (self._return_unit_value() * self.salt)
 
     @property
     def total_starter(self) -> float:
         """
         Returns the sum of the amount of flour in starter and the amount of water in starter.
         """
-        amount_of_starter_in_recipe = (
+        return self.quantity * (
             self._return_amount_of_flour_in_starter()
             + self._return_amount_of_water_in_starter(ratio=self.starter_ratio)
         )
-        return self.quantity * amount_of_starter_in_recipe
 
     @property
     def total_oil(self) -> float:
         """
         Returns the amount of oil in the recipe
         """
-        unit_value = self._return_unit_value()
-        oil_in_recipe = unit_value * self.oil
-        return self.quantity * oil_in_recipe
+        return self.quantity * (self._return_unit_value() * self.oil)
 
+    @staticmethod
+    def round_to_nearest_half(number: float) -> float:
+        return round(number * 2) / 2
 
-def round_to_nearest_half(number):
-    return round(number * 2) / 2
+    def print_recipe(self, round_to_half: bool = False) -> None:
+        """
+        Print the recipe with ingredient weights in grams.
+        If round_to_half is True, rounds all weights to nearest 0.5g.
+        """
+        flour = round(self.total_flour_in_recipe, 2)
+        water = round(self.total_water_in_recipe, 2)
+        salt = round(self.total_salt, 2)
+        starter = round(self.total_starter, 2)
+        oil = round(self.total_oil, 2)
+
+        if round_to_half:
+            flour = self.round_to_nearest_half(flour)
+            water = self.round_to_nearest_half(water)
+            salt = self.round_to_nearest_half(salt)
+            starter = self.round_to_nearest_half(starter)
+            oil = self.round_to_nearest_half(oil)
+
+        recipe = [
+            f"Number of dough balls: {self.quantity}\n",
+            "Recipe:",
+            f"Flour: {flour}g",
+            f"Water: {water}g",
+            f"Salt: {salt}g",
+            f"Starter: {starter}g",
+        ]
+
+        if oil > 0:
+            recipe.append(f"Oil: {oil}g")
+
+        print("\n".join(recipe))
 
 
 arg_parser = argparse.ArgumentParser()
@@ -179,29 +202,8 @@ def main():
         starter_ratio=parsed_args.ratio,
         oil=parsed_args.oil,
     )
-    flour = round(dough.total_flour_in_recipe, 2)
-    water = round(dough.total_water_in_recipe, 2)
-    salt = round(dough.total_salt, 2)
-    starter = round(dough.total_starter, 2)
-    oil = round(dough.total_oil, 2)
 
-    if not parsed_args.round:
-        print(
-            f"Number of dough balls: {parsed_args.quantity}\n\nRecipe:\nFlour: "
-            f"{flour}g\nWater: {water}g\nSalt: {salt}g\nStarter: {starter}g"
-            f"\nOil: {oil}g"
-        )
-    else:
-        flour = round_to_nearest_half(flour)
-        water = round_to_nearest_half(water)
-        salt = round_to_nearest_half(salt)
-        starter = round_to_nearest_half(starter)
-        oil = round_to_nearest_half(oil)
-        print(
-            f"Number of dough balls: {parsed_args.quantity}\n\nRecipe:\nFlour: "
-            f"{flour}g\nWater: {water}g\nSalt: {salt}g\nStarter: {starter}g"
-            f"\nOil: {oil}g"
-        )
+    dough.print_recipe(round_to_half=parsed_args.round)
 
 
 if __name__ == "__main__":
