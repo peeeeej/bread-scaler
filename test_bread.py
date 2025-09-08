@@ -137,7 +137,7 @@ def test_print_recipe_prints_recipe():
 
 
 def test_print_recipe_prints_recipe_with_oil():
-    """Test that print_recipe outputs the correct recipe format"""
+    """Test that print_recipe outputs oil when present in recipe"""
     dough = Loaf(quantity=1, weight=900, hydration=80, salt=2, starter=12, starter_ratio=0.8, oil=1)
     expected_output = (
         "Number of dough balls: 1\n\n"
@@ -154,7 +154,7 @@ def test_print_recipe_prints_recipe_with_oil():
 
 
 def test_print_recipe_prints_recipe_rounded():
-    """Test that print_recipe outputs the correct recipe format"""
+    """Test that print_recipe outputs the correct ingredients when rounding"""
     dough = Loaf(quantity=1, weight=900, hydration=80, salt=2, starter=12, starter_ratio=0.8, oil=0)
     expected_output = (
         "Number of dough balls: 1\n\n"
