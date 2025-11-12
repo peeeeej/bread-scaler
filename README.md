@@ -2,6 +2,8 @@
 
 Usage: `python3 bread.py --dough-weight 900 --water 80 --salt 2 --starter 12`
 
+Provide the total dough weight of a dough ball in grams, and the remaining ingredients in baker's percentages: https://www.kingarthurbaking.com/pro/reference/bakers-percentage
+
 What you'll get is a recipe for a single doughball with the ingredients displayed in grams:
 ```
 python3 bread.py -d 900 -w 80 -s 2 --starter 12
