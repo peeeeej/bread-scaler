@@ -4,7 +4,7 @@ Usage: `python3 bread.py --dough-weight 900 --water 80 --salt 2 --starter 12`
 
 What you'll get is a recipe for a single doughball with the ingredients displayed in grams:
 ```
-python3 bread.py -d 900 -w 80 -s 2 -y 12
+python3 bread.py -d 900 -w 80 -s 2 --starter 12
 Number of dough balls: 1
 
 Recipe:
@@ -17,7 +17,7 @@ Starter: 118.68g
 You can scale the recipe to multiple loaves if you'd like with the `--quantity` flag. Lastly, don't think of this as a bread-only tool, you can use this for pizza dough as well:
 
 ```
-python3 bread.py -d 250 -w 72 -s 2.6 -y 15 -q 3
+python3 bread.py -d 250 -w 72 -s 2.6 --starter 15 -q 3
 Number of dough balls: 3
 
 Recipe:
@@ -28,6 +28,8 @@ Starter: 128.87g
 ```
 
 The script defaults to using a starter that's equal parts flour and water, however if you feed a starter that's (for example) 1:4:5 (one part levain to 4 parts water to 5 parts flour), you can account for this by using the `--ratio` flag and providing the percentage of water as a float, in this case, `.8`
+
+If your recipe uses sugar, oil or commercial yeast, you can pass in `--sugar`, `--oil` or `--yeast`.
 
 If you like round numbers, use the `--round` flag to round the displayed ingredients to the nearest half gram.
 

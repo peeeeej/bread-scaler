@@ -5,7 +5,7 @@ from bread import Loaf
 from io import StringIO
 from unittest.mock import patch
 
-dough_test = Loaf(quantity=3, weight=250, hydration=72, salt=2, starter=12, starter_ratio=1, oil=0)
+dough_test = Loaf(quantity=3, weight=250, hydration=72, salt=2, starter=12, oil=0)
 
 dough_test_with_starter_ratio = Loaf(
     quantity=1, weight=900, hydration=80, salt=2, starter=12, starter_ratio=0.8, oil=0
@@ -33,6 +33,11 @@ def test_return_unit_value_returns_correct_unit_value():
 def test_return_starter_multiplier_returns_correct_starter_multiplier():
     starter_multiplier = dough_test._return_starter_multiplier()
     assert starter_multiplier == 0.12
+
+
+def test_starter_ratio_defaults_to_1():
+    starter_ratio = dough_test.starter_ratio
+    assert starter_ratio == 1
 
 
 def test_return_amount_of_flour_in_starter_returns_correct_amount():
@@ -144,7 +149,7 @@ def test_total_ingredients_weight_matches_target_commercial_yeast():
 
 
 def test_total_ingredients_weight_matches_target_multiple_loaves():
-    dough = Loaf(quantity=20, weight=1000, hydration=80, salt=2, starter=10, starter_ratio=1, oil=1)
+    dough = Loaf(quantity=20, weight=1000, hydration=80, salt=2, starter=10, oil=1)
     total_weight = (
         dough.total_flour_in_recipe
         + dough.total_water_in_recipe
