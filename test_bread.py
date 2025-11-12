@@ -14,6 +14,16 @@ dough_test_with_oil = Loaf(
     quantity=1, weight=250, hydration=72, salt=2, starter=12, starter_ratio=1, oil=3
 )
 
+dough_test_with_commercial_yeast_and_sugar = Loaf(
+    quantity=1, weight=700, hydration=59, salt=2, sugar=3, commercial_yeast=1.5
+)
+
+
+def test_loaf_requires_leavening_agent():
+    """Test that Loaf raises ValueError if neither starter nor yeast is provided"""
+    with pytest.raises(ValueError, match="Recipe must include either starter or commercial yeast"):
+        Loaf(quantity=1, weight=1000, hydration=80, salt=2)
+
 
 def test_return_unit_value_returns_correct_unit_value():
     unit_value = dough_test._return_unit_value()
@@ -70,6 +80,16 @@ def test_total_oil_returns_correct_amount_of_oil():
     assert oil_in_recipe == 4.237288135593221
 
 
+def test_total_commercial_yeast_returns_correct_amount_of_yeast():
+    yeast_in_recipe = dough_test_with_commercial_yeast_and_sugar.total_commercial_yeast
+    assert yeast_in_recipe == 6.344410876132931
+
+
+def test_total_sugar_returns_correct_amount_of_sugar():
+    sugar_in_recipe = dough_test_with_commercial_yeast_and_sugar.total_sugar
+    assert sugar_in_recipe == 12.688821752265863
+
+
 def test_round_to_nearest_half_rounds_to_half_gram():
     rounded_water = bread.Loaf.round_to_nearest_half(244.74)
     assert rounded_water == 244.5
@@ -81,20 +101,23 @@ def test_round_to_nearest_half_rounds_to_whole_gram():
 
 
 def test_total_ingredients_weight_matches_target():
-    dough = Loaf(quantity=1, weight=1000, hydration=80, salt=2, starter=10, starter_ratio=1, oil=3)
+    dough = Loaf(
+        quantity=1, weight=1000, hydration=80, salt=2, starter=10, starter_ratio=1, oil=3, sugar=3
+    )
     total_weight = (
         dough.total_flour_in_recipe
         + dough.total_water_in_recipe
         + dough.total_salt
         + dough.total_starter
         + dough.total_oil
+        + dough.total_sugar
     )
     assert total_weight == 1000
 
 
 def test_total_ingredients_weight_matches_target_with_ratio():
     dough = Loaf(
-        quantity=1, weight=1000, hydration=80, salt=2, starter=10, starter_ratio=0.8, oil=2
+        quantity=1, weight=1000, hydration=80, salt=2, starter=10, starter_ratio=0.8, oil=2, sugar=3
     )
     total_weight = (
         dough.total_flour_in_recipe
@@ -102,8 +125,22 @@ def test_total_ingredients_weight_matches_target_with_ratio():
         + dough.total_salt
         + dough.total_starter
         + dough.total_oil
+        + dough.total_sugar
     )
     assert total_weight == 1000
+
+
+def test_total_ingredients_weight_matches_target_commercial_yeast():
+    dough = Loaf(quantity=1, weight=1000, hydration=80, salt=2, oil=3, sugar=3, commercial_yeast=1)
+    total_weight = (
+        dough.total_flour_in_recipe
+        + dough.total_water_in_recipe
+        + dough.total_salt
+        + dough.total_oil
+        + dough.total_sugar
+        + dough.total_commercial_yeast
+    )
+    assert total_weight == pytest.approx(1000, rel=1e-9)
 
 
 def test_total_ingredients_weight_matches_target_multiple_loaves():
@@ -147,6 +184,23 @@ def test_print_recipe_prints_recipe_with_oil():
         "Salt: 9.84g\n"
         "Starter: 106.23g\n"
         "Oil: 4.92g\n"
+    )
+    with patch("sys.stdout", new=StringIO()) as fake_output:
+        dough.print_recipe(round_to_half=False)
+        assert fake_output.getvalue() == expected_output
+
+
+def test_print_recipe_prints_recipe_with_commercial_yeast_and_sugar():
+    """Test that print_recipe outputs sugar and commercial yeast when present in recipe"""
+    dough = Loaf(quantity=1, weight=500, hydration=59, salt=2, commercial_yeast=1.5, sugar=2)
+    expected_output = (
+        "Number of dough balls: 1\n\n"
+        "Recipe:\n"
+        "Flour: 303.95g\n"
+        "Water: 179.33g\n"
+        "Salt: 6.08g\n"
+        "Commercial Yeast: 4.56g\n"
+        "Sugar: 6.08g\n"
     )
     with patch("sys.stdout", new=StringIO()) as fake_output:
         dough.print_recipe(round_to_half=False)

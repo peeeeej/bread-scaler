@@ -8,10 +8,17 @@ class Loaf:
         weight: float,
         hydration: float,
         salt: float,
-        starter: float,
-        starter_ratio: float,
-        oil: float,
+        starter: float = 0,
+        starter_ratio: float = 1,
+        oil: float = 0,
+        sugar: float = 0,
+        commercial_yeast: float = 0,
     ) -> None:
+        if starter == 0 and commercial_yeast == 0:
+            raise ValueError(
+                "Recipe must include either starter or commercial yeast. "
+                "Provide --starter or --yeast argument."
+            )
         self.quantity = quantity
         self.weight = weight
         self.hydration = hydration
@@ -19,13 +26,17 @@ class Loaf:
         self.starter = starter
         self.starter_ratio = starter_ratio
         self.oil = oil
+        self.sugar = sugar
+        self.commercial_yeast = commercial_yeast
 
     def _return_unit_value(self) -> float:
         """
         Needed to determine downstream ingredient amounts based on weight of the loaf,
         hydration and the amount of salt
         """
-        return self.weight / (100 + (self.hydration + self.salt + self.oil))
+        return self.weight / (
+            100 + (self.hydration + self.salt + self.oil + self.sugar + self.commercial_yeast)
+        )
 
     def _return_starter_multiplier(self) -> float:
         """
@@ -97,8 +108,19 @@ class Loaf:
         """
         return self.quantity * (self._return_unit_value() * self.oil)
 
+    @property
+    def total_sugar(self) -> float:
+        """Returns the amount of sugar in the recipe"""
+        return self.quantity * (self._return_unit_value() * self.sugar)
+
+    @property
+    def total_commercial_yeast(self) -> float:
+        """Returns the amount of commercial yeast in the recipe"""
+        return self.quantity * (self._return_unit_value() * self.commercial_yeast)
+
     @staticmethod
     def round_to_nearest_half(number: float) -> float:
+        """Takes a number and returns it rounded to the nearest half"""
         return round(number * 2) / 2
 
     def print_recipe(self, round_to_half: bool = False) -> None:
@@ -111,6 +133,8 @@ class Loaf:
         salt = round(self.total_salt, 2)
         starter = round(self.total_starter, 2)
         oil = round(self.total_oil, 2)
+        sugar = round(self.total_sugar, 2)
+        commercial_yeast = round(self.total_commercial_yeast, 2)
 
         if round_to_half:
             flour = self.round_to_nearest_half(flour)
@@ -118,6 +142,8 @@ class Loaf:
             salt = self.round_to_nearest_half(salt)
             starter = self.round_to_nearest_half(starter)
             oil = self.round_to_nearest_half(oil)
+            sugar = self.round_to_nearest_half(sugar)
+            commercial_yeast = self.round_to_nearest_half(commercial_yeast)
 
         recipe = [
             f"Number of dough balls: {self.quantity}\n",
@@ -125,11 +151,16 @@ class Loaf:
             f"Flour: {flour}g",
             f"Water: {water}g",
             f"Salt: {salt}g",
-            f"Starter: {starter}g",
         ]
 
+        if starter > 0:
+            recipe.append(f"Starter: {starter}g")
+        if commercial_yeast > 0:
+            recipe.append(f"Commercial Yeast: {commercial_yeast}g")
         if oil > 0:
             recipe.append(f"Oil: {oil}g")
+        if sugar > 0:
+            recipe.append(f"Sugar: {sugar}g")
 
         print("\n".join(recipe))
 
@@ -162,15 +193,26 @@ arg_parser.add_argument(
 )
 arg_parser.add_argument("-s", "--salt", type=float, dest="salt", required=True, help="percent salt")
 arg_parser.add_argument(
-    "-y",
     "--starter",
     type=float,
     dest="starter",
-    required=True,
+    default=0,
+    required=False,
     help="percent starter as a portion of fermented flour",
 )
 arg_parser.add_argument(
-    "-o", "--oil", type=float, dest="oil", default=0, help="percent oil in recipe"
+    "-o", "--oil", type=float, dest="oil", default=0, required=False, help="percent oil in recipe"
+)
+arg_parser.add_argument(
+    "--sugar", type=float, dest="sugar", default=0, required=False, help="percent sugar in recipe"
+)
+arg_parser.add_argument(
+    "--yeast",
+    type=float,
+    dest="commercial_yeast",
+    default=0,
+    required=False,
+    help="percent commercial yeast in recipe",
 )
 arg_parser.add_argument(
     "--round",
@@ -201,6 +243,8 @@ def main():
         starter=parsed_args.starter,
         starter_ratio=parsed_args.ratio,
         oil=parsed_args.oil,
+        sugar=parsed_args.sugar,
+        commercial_yeast=parsed_args.commercial_yeast,
     )
 
     dough.print_recipe(round_to_half=parsed_args.round)
