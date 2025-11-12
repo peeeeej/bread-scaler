@@ -37,7 +37,7 @@ If you like round numbers, use the `--round` flag to round the displayed ingredi
 
 ### Testing
 
-Make sure to start a virtual environment:
+Make sure to create a virtual environment:
 `python3 -m venv .venv`
 
 Then start it:
