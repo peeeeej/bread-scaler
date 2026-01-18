@@ -1,3 +1,25 @@
+"""
+Bread Recipe Calculator - Scale recipes using baker's percentages.
+
+This tool converts baker's percentages (ingredient amounts expressed as a percentage
+of flour weight) into actual gram measurements for your specific dough weight and
+quantity.
+
+Example:
+    python bread.py -d 1000 -w 80 -s 2 --starter 10
+
+    Creates a recipe for 1000g of dough with:
+    - 80% hydration (water)
+    - 2% salt
+    - 10% starter (fermented flour)
+
+Usage:
+    - Use --starter for sourdough recipes
+    - Use --yeast for commercial yeast (pizza, quick breads)
+    - Combine with --oil, --sugar for enriched doughs
+    - Use --round to round ingredients to nearest 0.5g for practical baking
+"""
+
 import argparse
 
 
@@ -52,7 +74,7 @@ class Loaf:
         flour_in_starter = (self._return_unit_value() * 100) * self._return_starter_multiplier()
         return flour_in_starter
 
-    def _return_amount_of_water_in_starter(self, ratio) -> float:
+    def _return_amount_of_water_in_starter(self, ratio: float) -> float:
         """
         Returns the amount of water in the starter. If a starter ratio is not supplied on the
         command line, assume that the amount of water in the starter is equal to the amount of
@@ -76,7 +98,7 @@ class Loaf:
     @property
     def total_water_in_recipe(self) -> float:
         """
-        Returns the amount of water in the recipe minues the amount of water in the starter.
+        Returns the amount of water in the recipe minus the amount of water in the starter.
         """
         water_in_recipe = (
             self._return_unit_value() * self.hydration
@@ -124,43 +146,40 @@ class Loaf:
         return round(number * 2) / 2
 
     def print_recipe(self, round_to_half: bool = False) -> None:
-        """
-        Print the recipe with ingredient weights in grams.
-        If round_to_half is True, rounds all weights to nearest 0.5g.
-        """
-        flour = round(self.total_flour_in_recipe, 2)
-        water = round(self.total_water_in_recipe, 2)
-        salt = round(self.total_salt, 2)
-        starter = round(self.total_starter, 2)
-        oil = round(self.total_oil, 2)
-        sugar = round(self.total_sugar, 2)
-        commercial_yeast = round(self.total_commercial_yeast, 2)
+        """Print the recipe with ingredient weights in grams."""
+        ingredients = {
+            "flour": self.total_flour_in_recipe,
+            "water": self.total_water_in_recipe,
+            "salt": self.total_salt,
+            "starter": self.total_starter,
+            "oil": self.total_oil,
+            "sugar": self.total_sugar,
+            "commercial_yeast": self.total_commercial_yeast,
+        }
 
-        if round_to_half:
-            flour = self.round_to_nearest_half(flour)
-            water = self.round_to_nearest_half(water)
-            salt = self.round_to_nearest_half(salt)
-            starter = self.round_to_nearest_half(starter)
-            oil = self.round_to_nearest_half(oil)
-            sugar = self.round_to_nearest_half(sugar)
-            commercial_yeast = self.round_to_nearest_half(commercial_yeast)
+        # Round all ingredients
+        for key in ingredients:
+            ingredients[key] = round(ingredients[key], 2)
+            if round_to_half:
+                ingredients[key] = self.round_to_nearest_half(ingredients[key])
 
+        # Build recipe output
         recipe = [
             f"Number of dough balls: {self.quantity}\n",
             "Recipe:",
-            f"Flour: {flour}g",
-            f"Water: {water}g",
-            f"Salt: {salt}g",
+            f"Flour: {ingredients['flour']}g",
+            f"Water: {ingredients['water']}g",
+            f"Salt: {ingredients['salt']}g",
         ]
 
-        if starter > 0:
-            recipe.append(f"Starter: {starter}g")
-        if commercial_yeast > 0:
-            recipe.append(f"Commercial Yeast: {commercial_yeast}g")
-        if oil > 0:
-            recipe.append(f"Oil: {oil}g")
-        if sugar > 0:
-            recipe.append(f"Sugar: {sugar}g")
+        if ingredients["starter"] > 0:
+            recipe.append(f"Starter: {ingredients['starter']}g")
+        if ingredients["commercial_yeast"] > 0:
+            recipe.append(f"Commercial Yeast: {ingredients['commercial_yeast']}g")
+        if ingredients["oil"] > 0:
+            recipe.append(f"Oil: {ingredients['oil']}g")
+        if ingredients["sugar"] > 0:
+            recipe.append(f"Sugar: {ingredients['sugar']}g")
 
         print("\n".join(recipe))
 
