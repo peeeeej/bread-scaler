@@ -50,60 +50,41 @@ class Loaf:
         self.oil = oil
         self.sugar = sugar
         self.commercial_yeast = commercial_yeast
-
-    def _return_unit_value(self) -> float:
-        """
-        Needed to determine downstream ingredient amounts based on weight of the loaf,
-        hydration and the amount of salt
-        """
-        return self.weight / (
-            100 + (self.hydration + self.salt + self.oil + self.sugar + self.commercial_yeast)
+        self.unit_value = self.weight / (
+            100 + self.hydration + self.salt + self.oil + self.sugar + self.commercial_yeast
         )
+        self.total_flour_weight = self.unit_value * 100
+        self.starter_multiplier = self.starter * 0.01
 
-    def _return_starter_multiplier(self) -> float:
-        """
-        Needed to determine how much of the flour and water in the recipe is coming
-        from the starter.
-        """
-        return self.starter * 0.01
-
-    def _return_amount_of_flour_in_starter(self) -> float:
+    @property
+    def flour_in_starter(self) -> float:
         """
         Returns the amount of flour in the starter.
         """
-        flour_in_starter = (self._return_unit_value() * 100) * self._return_starter_multiplier()
-        return flour_in_starter
+        return self.total_flour_weight * self.starter_multiplier
 
-    def _return_amount_of_water_in_starter(self, ratio: float) -> float:
+    @property
+    def water_in_starter(self) -> float:
         """
         Returns the amount of water in the starter. If a starter ratio is not supplied on the
         command line, assume that the amount of water in the starter is equal to the amount of
         flour in the starter.
         """
-        water_in_starter = (
-            (self._return_unit_value() * 100) * self._return_starter_multiplier()
-        ) * ratio
-        return water_in_starter
+        return (self.total_flour_weight * self.starter_multiplier) * self.starter_ratio
 
     @property
     def total_flour_in_recipe(self) -> float:
         """
         Returns the amount of flour in the recipe minus the amount of flour in the starter.
         """
-        flour_in_recipe = (
-            self._return_unit_value() * 100
-        ) - self._return_amount_of_flour_in_starter()
-        return self.quantity * flour_in_recipe
+        return self.quantity * (self.total_flour_weight - self.flour_in_starter)
 
     @property
     def total_water_in_recipe(self) -> float:
         """
         Returns the amount of water in the recipe minus the amount of water in the starter.
         """
-        water_in_recipe = (
-            self._return_unit_value() * self.hydration
-        ) - self._return_amount_of_water_in_starter(ratio=self.starter_ratio)
-        return self.quantity * water_in_recipe
+        return self.quantity * ((self.unit_value * self.hydration) - self.water_in_starter)
 
     @property
     def total_salt(self) -> float:
@@ -111,34 +92,31 @@ class Loaf:
         Returns the amount of salt in the recipe based on the unit value calculation and
         the percent of salt in the loaf.
         """
-        return self.quantity * (self._return_unit_value() * self.salt)
+        return self.quantity * (self.unit_value * self.salt)
 
     @property
     def total_starter(self) -> float:
         """
         Returns the sum of the amount of flour in starter and the amount of water in starter.
         """
-        return self.quantity * (
-            self._return_amount_of_flour_in_starter()
-            + self._return_amount_of_water_in_starter(ratio=self.starter_ratio)
-        )
+        return self.quantity * (self.flour_in_starter + self.water_in_starter)
 
     @property
     def total_oil(self) -> float:
         """
         Returns the amount of oil in the recipe
         """
-        return self.quantity * (self._return_unit_value() * self.oil)
+        return self.quantity * (self.unit_value * self.oil)
 
     @property
     def total_sugar(self) -> float:
         """Returns the amount of sugar in the recipe"""
-        return self.quantity * (self._return_unit_value() * self.sugar)
+        return self.quantity * (self.unit_value * self.sugar)
 
     @property
     def total_commercial_yeast(self) -> float:
         """Returns the amount of commercial yeast in the recipe"""
-        return self.quantity * (self._return_unit_value() * self.commercial_yeast)
+        return self.quantity * (self.unit_value * self.commercial_yeast)
 
     @staticmethod
     def round_to_nearest_half(number: float) -> float:

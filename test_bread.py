@@ -26,12 +26,12 @@ def test_loaf_requires_leavening_agent():
 
 
 def test_return_unit_value_returns_correct_unit_value():
-    unit_value = dough_test._return_unit_value()
+    unit_value = dough_test.unit_value
     assert unit_value == 1.4367816091954022
 
 
 def test_return_starter_multiplier_returns_correct_starter_multiplier():
-    starter_multiplier = dough_test._return_starter_multiplier()
+    starter_multiplier = dough_test.starter_multiplier
     assert starter_multiplier == 0.12
 
 
@@ -41,7 +41,7 @@ def test_starter_ratio_defaults_to_1():
 
 
 def test_return_amount_of_flour_in_starter_returns_correct_amount():
-    amount_in_starter = dough_test._return_amount_of_flour_in_starter()
+    amount_in_starter = dough_test.flour_in_starter
     assert amount_in_starter == 17.241379310344826
 
 
@@ -61,7 +61,7 @@ def test_return_water_in_recipe_returns_correct_amount_of_water_with_ratio():
 
 
 def test_total_water_returns_correct_water_in_recipe_with_ratio():
-    water_in_starter = dough_test_with_starter_ratio._return_amount_of_water_in_starter(ratio=0.8)
+    water_in_starter = dough_test_with_starter_ratio.water_in_starter
     assert water_in_starter == 47.472527472527474
 
 
