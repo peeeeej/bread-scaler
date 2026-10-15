@@ -136,7 +136,7 @@ class Loaf:
         }
 
         # Round all ingredients
-        for key in ingredients:
+        for key, value in ingredients.items():
             ingredients[key] = round(ingredients[key], 2)
             if round_to_half:
                 ingredients[key] = self.round_to_nearest_half(ingredients[key])

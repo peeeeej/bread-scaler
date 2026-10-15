@@ -1,9 +1,10 @@
-import bread
-import pytest
-
-from bread import Loaf
 from io import StringIO
 from unittest.mock import patch
+
+import pytest
+
+import bread
+from bread import Loaf
 
 dough_test = Loaf(quantity=3, weight=250, hydration=72, salt=2, starter=12, oil=0)
 
